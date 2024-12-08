@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>回線タイプ診断ツール</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h1>回線タイプ診断ツール</h1>
+  <p class="intro">いくつかの質問に答えることで、あなたのビジネス状況に合った回線＆ISP例を紹介します。<br>※結果は参考例であり、最新情報は各事業者へ確認してください。</p>
+
+  <div class="progress" id="progressIndicator">質問 1/4</div>
+
+  <form id="quizForm">
+
+    <!-- Q1 -->
+    <div class="question active" data-question="1">
+      <p>Q1: 回線選びで重視するポイントは？</p>
+      <div class="question-description">
+        「コスト重視」= 目安: 月額1万円未満で収めたい。<br>
+        「品質重視」= 目安: 月額5万円以上出しても帯域保証やSLAが欲しい。
+      </div>
+      <div class="answers">
+        <label><input type="radio" name="q1" value="cost" required> 月額1万円未満程度で収めるコスト重視</label>
+        <label><input type="radio" name="q1" value="quality"> 月額5万円以上かかっても高品質・安定性重視</label>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="question" data-question="2">
+      <p>Q2: 導入までに待てる期間は？</p>
+      <div class="answers">
+        <label><input type="radio" name="q2" value="fast" required> 約7日以内に利用開始したい</label>
+        <label><input type="radio" name="q2" value="normal"> 約4週間程度待てる</label>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="question" data-question="3">
+      <p>Q3: 将来的な拡張（拠点追加、海外展開、帯域増強）は？</p>
+      <div class="answers">
+        <label><input type="radio" name="q3" value="scalable" required> 将来、拡張する可能性がある</label>
+        <label><input type="radio" name="q3" value="fixed"> 現状規模で十分</label>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="question" data-question="4">
+      <p>Q4: 常時インターネット利用者数の規模は？</p>
+      <div class="answers">
+        <label><input type="radio" name="q4" value="small" required> 約1～20名程度の小規模</label>
+        <label><input type="radio" name="q4" value="large"> 20名以上の中～大規模</label>
+      </div>
+    </div>
+
+    <div id="buttonArea">
+      <button type="button" id="prevBtn" style="display:none;">一つ前へ戻る</button>
+      <button type="button" id="resetBtn">最初に戻る</button>
+      <button type="button" id="nextBtn">次へ</button>
+      <button type="button" id="resultBtn" style="display:none;">結果を表示</button>
+    </div>
+  </form>
+
+  <div id="result">
+    <h2>診断結果</h2>
+    <div id="recommendation"></div>
+    <button id="allResultsBtn">すべての結果例を見る</button>
+  </div>
+
+  <div id="allResults">
+    <h2>すべての結果例一覧</h2>
+    <p>ここに全パターンの結果例を記載可能。</p>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
