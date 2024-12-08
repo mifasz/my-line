@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body { font-family: sans-serif; max-width: 500px; margin: 20px auto; line-height: 1.5; }
+  .question { display: none; margin-bottom: 20px; }
+  .question.active { display: block; }
+  .answers label { display: block; margin: 10px 0; cursor: pointer; }
+  #nextBtn, #resultBtn { margin-top: 20px; padding: 10px 20px; cursor: pointer; }
+  #result { margin-top: 30px; font-weight: bold; display: none; }
+</style>
+<title>回線タイプ診断</title>
+</head>
+<body>
+
+<h1>回線タイプ診断</h1>
+<p>いくつかの質問に答えると、あなたのビジネスに合った回線タイプを提案する簡易診断ツール。</p>
+
+<form id="quizForm">
+
+  <!-- 質問1 -->
+  <div class="question active" data-question="1">
+    <p>Q1: 回線コストと品質、どちらをより重視？</p>
+    <div class="answers">
+      <label><input type="radio" name="q1" value="cost" required> コストを抑えたい</label>
+      <label><input type="radio" name="q1" value="quality"> 安定性・品質重視</label>
+    </div>
+  </div>
+
+  <!-- 質問2 -->
+  <div class="question" data-question="2">
+    <p>Q2: 導入まで待てる期間は？</p>
+    <div class="answers">
+      <label><input type="radio" name="q2" value="fast" required> 1週間以内に使いたい</label>
+      <label><input type="radio" name="q2" value="normal"> 1～2ヶ月待てる</label>
+    </div>
+  </div>
+
+  <!-- 質問3 -->
+  <div class="question" data-question="3">
+    <p>Q3: 将来的な拡張(拠点追加・帯域増強)を考慮している？</p>
+    <div class="answers">
+      <label><input type="radio" name="q3" value="scalable" required> 拡張性が欲しい</label>
+      <label><input type="radio" name="q3" value="fixed"> 今の規模で十分</label>
+    </div>
+  </div>
+
+  <button type="button" id="nextBtn">次へ</button>
+  <button type="button" id="resultBtn" style="display:none;">結果を表示</button>
+
+</form>
+
+<div id="result"></div>
+
+<script>
+  (function(){
+    var currentQuestion = 1;
+    var totalQuestions = 3;
+    var nextBtn = document.getElementById('nextBtn');
+    var resultBtn = document.getElementById('resultBtn');
+    var resultDiv = document.getElementById('result');
+    var quizForm = document.getElementById('quizForm');
+
+    console.log("診断開始：質問数 =", totalQuestions);
+
+    // 「次へ」ボタン
+    nextBtn.addEventListener('click', function(){
+      console.log("「次へ」クリック: 現在の質問 =", currentQuestion);
+      // 現在の質問を取得
+      var currentQ = quizForm.querySelector('.question[data-question="'+currentQuestion+'"]');
+      var inputs = currentQ.querySelectorAll('input[type="radio"]');
+      var answered = false;
+      for(var i=0; i<inputs.length; i++){
+        if(inputs[i].checked) { answered = true; break; }
+      }
+
+      if(!answered) {
+        alert('回答を選択してください');
+        return;
+      }
+
+      // 次の質問へ移動処理
+      currentQ.classList.remove('active');
+      currentQuestion++;
+      console.log("次の質問番号 =", currentQuestion);
+
+      if(currentQuestion <= totalQuestions) {
+        var nextQ = quizForm.querySelector('.question[data-question="'+currentQuestion+'"]');
+        if(nextQ) {
+          nextQ.classList.add('active');
+        } else {
+          console.error("次の質問が見つかりません。");
+        }
+      }
+
+      // 全ての質問が終わったら「結果を表示」ボタンに切替
+      if(currentQuestion > totalQuestions) {
+        nextBtn.style.display = 'none';
+        resultBtn.style.display = 'inline-block';
+      }
+    });
+
+    // 「結果を表示」ボタン
+    resultBtn.addEventListener('click', function(){
+      console.log("結果表示開始");
+      var q1 = quizForm.querySelector('input[name="q1"]:checked').value;
+      var q2 = quizForm.querySelector('input[name="q2"]:checked').value;
+      var q3 = quizForm.querySelector('input[name="q3"]:checked').value;
+
+      var recommendation = "";
+
+      // 簡易ロジック例
+      if(q1 === "cost") {
+        if(q2 === "fast") {
+          recommendation = "無線(FWA/5G)回線";
+        } else {
+          recommendation = "光コラボ系光回線(ドコモ光、OCN光など)";
+        }
+      } else {
+        // quality重視
+        if(q2 === "fast") {
+          recommendation = "短期的には無線(FWA/5G)で対応、将来的には専用線を検討";
+        } else {
+          recommendation = "専用線(OCNエンタープライズIPアクセス、KDDI IP-VPN等)";
+        }
+      }
+
+      if(q3 === "scalable" && recommendation.indexOf("専用線") === -1) {
+        recommendation += "。拡張を考えるなら専用線も再検討してほしい";
+      }
+
+      resultDiv.textContent = "おすすめの回線タイプ: " + recommendation;
+      resultDiv.style.display = 'block';
+      console.log("結果表示:", recommendation);
+    });
+  })();
+</script>
+
+</body>
+</html>
