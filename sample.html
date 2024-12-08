@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body { font-family: sans-serif; max-width: 500px; margin: 20px auto; line-height: 1.5; }
+  .question { display: none; margin-bottom: 20px; }
+  .question.active { display: block; }
+  .answers label { display: block; margin: 10px 0; cursor: pointer; }
+  #nextBtn, #resultBtn { margin-top: 20px; padding: 10px 20px; cursor: pointer; }
+  #result { margin-top: 30px; font-weight: bold; display: none; }
+</style>
+<title>回線タイプ診断</title>
+</head>
+<body>
+
+<h1>回線タイプ診断</h1>
+<p>いくつかの質問に答えると、あなたのビジネスに合った回線タイプを提案します。</p>
+
+<form id="quizForm">
+
+  <!-- 質問1 -->
+  <div class="question active" data-question="1">
+    <p>Q1: 回線コストと品質、どちらをより重視したいか？</p>
+    <div class="answers">
+      <label><input type="radio" name="q1" value="cost" required> コストをなるべく抑えたい</label>
+      <label><input type="radio" name="q1" value="quality"> 多少高くても安定性・品質重視</label>
+    </div>
+  </div>
+
+  <!-- 質問2 -->
+  <div class="question" data-question="2">
+    <p>Q2: 導入まで待てる期間は？</p>
+    <div class="answers">
+      <label><input type="radio" name="q2" value="fast" required> すぐに使いたい(1週間以内)</label>
+      <label><input type="radio" name="q2" value="normal"> 1～2ヶ月程度は待てる</label>
+    </div>
+  </div>
+
+  <!-- 質問3 -->
+  <div class="question" data-question="3">
+    <p>Q3: 将来的な拡張(拠点追加・帯域増強)を考慮しているか？</p>
+    <div class="answers">
+      <label><input type="radio" name="q3" value="scalable" required> 拡張性が欲しい</label>
+      <label><input type="radio" name="q3" value="fixed"> 今の規模で十分</label>
+    </div>
+  </div>
+
+  <button type="button" id="nextBtn">次へ</button>
+  <button type="button" id="resultBtn" style="display:none;">結果を表示</button>
+
+</form>
+
+<div id="result"></div>
+
+<script>
+  (function(){
+    var currentQuestion = 1;
+    var totalQuestions = 3;
+    var nextBtn = document.getElementById('nextBtn');
+    var resultBtn = document.getElementById('resultBtn');
+    var resultDiv = document.getElementById('result');
+    var quizForm = document.getElementById('quizForm');
+
+    // 次へボタン
+    nextBtn.addEventListener('click', function(){
+      // 現在の質問が回答されたかチェック
+      var currentQ = quizForm.querySelector('.question[data-question="'+currentQuestion+'"]');
+      var inputs = currentQ.querySelectorAll('input[type="radio"]');
+      var answered = false;
+      for(var i=0; i<inputs.length; i++){
+        if(inputs[i].checked) { answered = true; break; }
+      }
+
+      if(!answered) {
+        alert('回答を選択してください');
+        return;
+      }
+
+      // 次の質問へ
+      currentQ.classList.remove('active');
+      currentQuestion++;
+      if(currentQuestion <= totalQuestions) {
+        var nextQ = quizForm.querySelector('.question[data-question="'+currentQuestion+'"]');
+        nextQ.classList.add('active');
+      }
+
+      // 最終質問なら「結果を表示」ボタンに切り替え
+      if(currentQuestion > totalQuestions) {
+        nextBtn.style.display = 'none';
+        resultBtn.style.display = 'inline-block';
+      }
+    });
+
+    // 結果表示ボタン
+    resultBtn.addEventListener('click', function(){
+      var q1 = quizForm.querySelector('input[name="q1"]:checked').value;
+      var q2 = quizForm.querySelector('input[name="q2"]:checked').value;
+      var q3 = quizForm.querySelector('input[name="q3"]:checked').value;
+
+      // 簡易ロジック例:
+      // q1でcostならコスト優先 → 光コラボ、qualityなら専用線寄り
+      // q2でfastなら即導入重視 → 無線、normalなら有線でもOK
+      // q3でscalableなら拡張性 → 専用線有利、fixedなら光回線でもOK
+
+      var recommendation = "";
+
+      if(q1 === "cost") {
+        if(q2 === "fast") {
+          // コスト優先で即導入 → 無線(FWA/5G)
+          recommendation = "無線(FWA/5G)回線";
+        } else {
+          // コスト優先で待てる → 光コラボ系光回線
+          recommendation = "光コラボ系光回線(ドコモ光、OCN光など)";
+        }
+      } else {
+        // quality重視
+        if(q2 === "fast") {
+          // 品質重視だがすぐ必要 → 難しいが、無線は品質劣るため妥協
+          recommendation = "短期的には無線(FWA/5G)、将来的には専用線検討";
+        } else {
+          //
